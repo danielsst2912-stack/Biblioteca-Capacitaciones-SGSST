@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administración – Biblioteca de capacitaciones SST</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+  nav.tabs button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 10px 14px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+  nav.tabs button[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--orange); }
+  .split { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+  .split > .card:first-child { position: sticky; top: 12px; }
+  .stat { font-size: 13px; color: var(--muted); }
+  .bar { height: 6px; background: var(--tint); border-radius: 3px; overflow: hidden; margin-top: 4px; min-width: 80px; }
+  .bar i { display: block; height: 100%; background: var(--ok); }
+  .help { font-size: 13px; color: var(--muted); margin-top: -6px; margin-bottom: 12px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .split > .card:first-child { position: static; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <img src="logo.png" alt="Puppy Export" class="brand">
+  <span class="app-name">Biblioteca SST · Administración</span>
+  <span class="spacer"></span>
+  <div class="who" id="who" hidden><span id="whoMail"></span><button class="link" id="btnSalir" type="button">Cerrar sesión</button></div>
+</div></header>
+
+<main class="wrap">
+  <!-- Ingreso del administrador -->
+  <section id="vLogin" class="card narrow" hidden>
+    <h1>Administración</h1>
+    <p class="sub">Ingrese con la cuenta de administrador del SG-SST.</p>
+    <form id="fLogin">
+      <label class="f"><span>Correo</span><input type="email" id="aMail" autocomplete="username" required></label>
+      <label class="f"><span>Contraseña</span><input type="password" id="aPass" autocomplete="current-password" required></label>
+      <button class="primary" type="submit" style="width:100%">Ingresar</button>
+      <p class="msg err" id="aMsg" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="vApp" hidden>
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="tBib" aria-selected="true">Biblioteca</button>
+      <button type="button" role="tab" data-tab="tTrab" aria-selected="false">Trabajadores</button>
+      <button type="button" role="tab" data-tab="tActas" aria-selected="false">Actas</button>
+    </nav>
+
+    <!-- Biblioteca -->
+    <div id="tBib" role="tabpanel">
+      <div class="split">
+        <form class="card" id="fMat">
+          <h2 id="fMatTitle">Subir material</h2>
+          <label class="f"><span>Tema *</span><input type="text" id="mTema" required maxlength="200"></label>
+          <div class="row2">
+            <label class="f"><span>Tipo</span><select id="mTipo"><option>Capacitación</option><option>Socialización</option><option>Inducción</option><option>Reinducción</option><option>Otro</option></select></label>
+            <label class="f"><span>Duración (minutos)</span><input type="number" id="mDur" min="1" max="600"></label>
+          </div>
+          <label class="f"><span>Objetivo</span><textarea id="mObj" rows="2"></textarea></label>
+          <label class="f"><span>Contenidos o descripción</span><textarea id="mDesc" rows="3"></textarea></label>
+          <div class="row2">
+            <label class="f"><span>Facilitador</span><input type="text" id="mFac"></label>
+            <label class="f"><span>Estándar relacionado</span><select id="mEst"></select></label>
+          </div>
+          <label class="f"><span>Fecha límite para firmar</span><input type="date" id="mLim"></label>
+          <div class="f" style="font-size:14px;color:var(--muted);margin-bottom:12px"><span>Dirigido a (si no marca ninguna, aplica a todas las áreas)</span><div class="checks" id="mAreas"></div></div>
+          <label class="f"><span>Archivo (PDF, video, imagen, Word o PowerPoint; máximo 50 MB)</span><input type="file" id="mFile" accept=".pdf,video/*,image/*,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></label>
+          <p class="help" id="mFileActual"></p>
+          <label class="f"><span>O enlace externo (YouTube, Drive)</span><input type="url" id="mLink" placeholder="https://"></label>
+          <label class="check"><input type="checkbox" id="mPub" checked> <span>Publicar ahora para los trabajadores</span></label>
+          <div class="actions">
+            <button class="primary" type="submit" id="btnGuardarMat">Guardar material</button>
+            <button type="button" id="btnCancelarMat" hidden>Cancelar edición</button>
+          </div>
+          <p class="msg" id="mMsg" role="status"></p>
+        </form>
+        <div class="card">
+          <h2>Material publicado y borradores</h2>
+          <div class="tw"><table>
+            <thead><tr><th>Tema</th><th>Tipo</th><th>Firmas</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="matRows"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trabajadores -->
+    <div id="tTrab" role="tabpanel" hidden>
+      <div class="split">
+        <div>
+          <form class="card" id="fTrab">
+            <h2 id="fTrabTitle">Agregar trabajador</h2>
+            <div class="row2">
+              <label class="f"><span>Cédula *</span><input type="text" id="tCed" inputmode="numeric" required></label>
+              <label class="f"><span>PIN *</span><input type="text" id="tPin" inputmode="numeric" minlength="4" maxlength="8" placeholder="4 a 8 dígitos"></label>
+            </div>
+            <p class="help" id="tPinHelp">El trabajador usa este PIN para ingresar. Entrégueselo de forma privada.</p>
+            <label class="f"><span>Nombre completo *</span><input type="text" id="tNom" required></label>
+            <div class="row2">
+              <label class="f"><span>Cargo</span><input type="text" id="tCar"></label>
+              <label class="f"><span>Área</span><select id="tArea"></select></label>
+            </div>
+            <label class="f"><span>Sede</span><input type="text" id="tSede"></label>
+            <label class="check"><input type="checkbox" id="tAct" checked> <span>Activo</span></label>
+            <div class="actions">
+              <button class="primary" type="submit">Guardar trabajador</button>
+              <button type="button" id="btnCancelarTrab" hidden>Cancelar edición</button>
+            </div>
+            <p class="msg" id="tMsg" role="status"></p>
+          </form>
+          <div class="card" style="margin-top:16px">
+            <h2>Cargar varios trabajadores</h2>
+            <p class="help" style="margin-top:0">Pegue una fila por trabajador, separando los datos con punto y coma:<br>cédula;nombre;cargo;área;sede;PIN</p>
+            <textarea id="tBulk" rows="5" placeholder="1012345678;Ana Pérez Gómez;Groomer;Grooming;Principal;4821"></textarea>
+            <div class="actions" style="margin-top:8px"><button type="button" id="btnBulk">Cargar trabajadores</button></div>
+            <p class="msg" id="bMsg" role="status"></p>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Trabajadores registrados <span class="stat" id="tCount"></span></h2>
+          <div class="tw"><table>
+            <thead><tr><th>Nombre</th><th>Cédula</th><th>Cargo</th><th>Área</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="trabRows"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actas -->
+    <div id="tActas" role="tabpanel" hidden>
+      <div class="card no-print">
+        <label class="f" style="margin-bottom:8px"><span>Seleccione el material</span><select id="actaSel"></select></label>
+        <label class="check" style="margin:6px 0 12px"><input type="checkbox" id="actaPend" checked> <span>Incluir en el acta la lista de trabajadores pendientes</span></label>
+        <div class="actions">
+          <button class="primary" type="button" id="btnPdf" disabled>Descargar acta en PDF</button>
+          <button type="button" id="btnPrint" disabled>Imprimir</button>
+          <button type="button" id="btnCsv" disabled>Exportar firmantes (CSV)</button>
+        </div>
+        <p class="msg" id="actaMsg" role="status"></p>
+      </div>
+      <div id="actaWrap"></div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

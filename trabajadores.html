@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capacitaciones SST – Puppy Export</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top"><div class="in">
+  <img src="logo.png" alt="Puppy Export" class="brand">
+  <span class="app-name">Capacitaciones SST</span>
+  <span class="spacer"></span>
+  <div class="who" id="who" hidden><span id="whoName"></span><button class="link" id="btnSalir" type="button">Salir</button></div>
+</div></header>
+
+<main class="wrap">
+  <!-- Ingreso -->
+  <section id="vLogin" class="card narrow" hidden>
+    <h1>Ingrese a sus capacitaciones</h1>
+    <p class="sub">Use su número de cédula y el PIN que le entregó el responsable del SG-SST.</p>
+    <form id="fLogin" autocomplete="on">
+      <label class="f"><span>Cédula</span><input id="lCed" type="text" inputmode="numeric" autocomplete="username" required></label>
+      <label class="f"><span>PIN</span><input id="lPin" type="password" inputmode="numeric" autocomplete="current-password" required></label>
+      <button class="primary" type="submit" id="btnIngresar" style="width:100%">Ingresar</button>
+      <p class="msg err" id="lMsg" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- Biblioteca -->
+  <section id="vList" hidden>
+    <h1 id="hHola"></h1>
+    <p class="sub" id="hResumen"></p>
+    <div id="list" class="mat-list"></div>
+  </section>
+
+  <!-- Detalle, firma y material -->
+  <section id="vDetail" hidden>
+    <button class="link" id="btnVolver" type="button">Volver a mis capacitaciones</button>
+    <article class="card" style="margin-top:10px">
+      <p class="sub" id="dTipo" style="margin-bottom:4px"></p>
+      <h1 id="dTema"></h1>
+      <p id="dMeta" class="sub"></p>
+      <p id="dObj"></p>
+      <p id="dDesc" class="sub"></p>
+
+      <div id="signBox">
+        <h2>Firme su asistencia</h2>
+        <p id="dDecl"></p>
+        <div class="pad" id="pad"><canvas width="900" height="300" aria-label="Recuadro para firmar"></canvas><span class="hint">Firme aquí con el dedo</span></div>
+        <div class="actions"><button class="link" id="btnBorrar" type="button">Borrar firma</button></div>
+        <label class="check"><input type="checkbox" id="chkDecl"> <span>Acepto la declaración y firmo con mi cédula y PIN personal.</span></label>
+        <button class="primary" id="btnFirmar" type="button" disabled>Firmar y ver el material</button>
+        <p class="msg err" id="sMsg" role="alert"></p>
+      </div>
+
+      <div id="viewBox" hidden>
+        <p class="msg ok" id="vOk"></p>
+        <div id="viewer"></div>
+        <div class="actions">
+          <button class="primary" id="btnVisto" type="button">Terminé de revisar el material</button>
+        </div>
+        <p class="msg" id="vMsg" role="status"></p>
+      </div>
+    </article>
+  </section>
+</main>
+
+<style>
+  .mat-list { display: grid; gap: 12px; margin-top: 18px; }
+  .mat { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; text-align: left; width: 100%; background: var(--paper); border: 1px solid var(--line); border-left: 6px solid var(--orange); border-radius: var(--radius); padding: 16px 18px; }
+  .mat.done { border-left-color: var(--ok); }
+  .mat .t { font-weight: 700; font-size: 17px; color: var(--ink); }
+  .mat .m { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
+  .empty { background: var(--paper); border: 1px dashed var(--line); border-radius: var(--radius); padding: 24px; text-align: center; color: var(--muted); }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="trabajadores.js"></script>
+</body>
+</html>
